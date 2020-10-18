@@ -48,6 +48,10 @@ You will need to have a Red Hat OpenShift on IBM Cloud cluster created in a gen2
 
     It will also be possible to open the OpenShift Console for the cluster using the IBM Cloud web user interface.
 
+## Use with multiple clusters
+
+This approach is applicable for multiple clusters in a region as long as the hostname for the Cluster API and Oauth endpoint is the same. To add support for additional clusters, just add their port values to the `ports` array in [vars/main.yaml](./vars/main.yaml).
+
 ## Tested on
 
 This has been tested and works on:
