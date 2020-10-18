@@ -1,0 +1,53 @@
+global
+    log         127.0.0.1 local2 
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats level admin
+
+resolvers mydns
+    # read from VPC node in us-east
+    nameserver dns1 161.26.0.10:53
+    nameserver dns2 161.26.0.11:53
+    nameserver fallback 8.8.8.8:53
+    resolve_retries       3
+    timeout resolve       1s
+    timeout retry         1s
+    hold other           30s
+    hold refused         30s
+    hold nx              30s
+    hold timeout         30s
+    hold valid           3600s
+    hold obsolete        30s
+
+defaults
+    mode                    {{ mode }}
+    log                     global
+    option                  tcplog
+    option                  dontlognull
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+{% for port in ports %}
+frontend listen-{{ port }}
+    bind 0.0.0.0:{{ port }}
+    default_backend server-{{ port }}
+
+backend server-{{ port }}
+    balance {{ balance }}
+    server mytugboat {{ backend }}:{{ port }} check resolvers mydns
+
+{% endfor %}

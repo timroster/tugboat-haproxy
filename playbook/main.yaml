@@ -1,0 +1,42 @@
+---
+- name: Install and configure HAProxy
+  hosts: all
+
+  tasks:
+    - name: Fetch the variables from var file
+      include_vars:
+        file: ../vars/main.yaml
+
+    - name: Download and install haproxy
+      dnf: 
+        name: haproxy
+        state: present
+
+    - name: Configure the haproxy cnf file with targets
+      template: 
+        src: ../templates/haproxy.cfg.j2 
+        dest: /etc/haproxy/haproxy.cfg   
+      notify: restart haproxy
+
+    - name: Start the haproxy service
+      service: 
+        name: haproxy 
+        state: started 
+        enabled: yes
+
+    - name: Fix broken of haproxy on reboot per https://bugzilla.redhat.com/show_bug.cgi?id=1756714
+      replace: 
+        path: /usr/lib/systemd/system/haproxy.service
+        regexp: 'network\.target'
+        replace: 'network-online.target'
+      
+  handlers:
+    - name: restart haproxy
+      service: 
+        name: haproxy 
+        state: restarted
+
+    - name: reload haproxy
+      service: 
+        name: haproxy 
+        state: reloaded

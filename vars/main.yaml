@@ -1,0 +1,20 @@
+---
+# Variables for the HAproxy configuration
+
+# server backend for private endpoints
+backend: c104-e.private.us-east.containers.cloud.ibm.com
+
+# array of ports for backends to define
+ports:
+  - 32359
+  - 30652
+
+### No need to change values below this line
+
+# HAProxy supports "http" and "tcp". For SSL, SMTP, etc, use "tcp".
+mode: tcp
+
+# Balancing Algorithm. Available options:
+# roundrobin, source, leastconn, source, uri
+# (if persistance is required use, "source")
+balance: roundrobin 
