@@ -13,14 +13,14 @@ You will need to have a Red Hat OpenShift on IBM Cloud cluster created in a gen2
 1. To configure the variables in the [vars/main.yaml](./vars/main.yaml) for your environment you will need to identify the hostname and ports used for the cluster. From a workstation logged in with the IBM Cloud CLI run:
 
     ```console
-    $ibmcloud oc cluster get --cluster my-private-cluster --output json | jq -r '.masterURL'
+    $ ibmcloud oc cluster get --cluster my-private-cluster --output json | jq -r '.masterURL'
     https://c104-e.private.us-east.containers.cloud.ibm.com:32359
     ```
 
     Here the host name is `c104-e.private.us-east.containers.cloud.ibm.com` and the Cluster API port is `32359`. This is one of the two ports that need to be proxied for the cluster. To get the other port, query this API endpoint for the Oauth endpoint:
 
     ```console
-    curl -sk -XGET  -H "X-Csrf-Token: 1" 'https://c104-e.private.us-east.containers.cloud.ibm.com:32359/.well-known/oauth-authorization-server' | grep token_endpoint
+    $ curl -sk -XGET  -H "X-Csrf-Token: 1" 'https://c104-e.private.us-east.containers.cloud.ibm.com:32359/.well-known/oauth-authorization-server' | grep token_endpoint
     "token_endpoint": "https://c104-e.private.us-east.containers.cloud.ibm.com:30652/oauth/token"
     ```
 
